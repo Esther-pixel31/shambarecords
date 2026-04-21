@@ -16,31 +16,31 @@ The app supports two roles:
 
 ## Features
 
-# Users and Access
+### Users and Access
 - JWT-based login
 - Role-based access control
 - Admin and Agent roles
 
-# Field Management
+### Field Management
 
 - Create fields
 - Assign fields to agents
 - Track crop type and planting date
 
-# Field Updates
+### Field Updates
 
 - Agents update field stage
 - Agents add notes
 - Each update stored with timestamp
 
-# Field Lifecycle
+### Field Lifecycle
 
 - Planted
 - Growing
 - Ready
 - Harvested
 
-## Field Status Logic
+### Field Status Logic
 
 Each field has a computed status based on planting date, current stage, and update freshness:
 
