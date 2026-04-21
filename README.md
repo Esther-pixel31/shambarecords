@@ -1,11 +1,13 @@
 # SmartSeason Field Monitoring System
 
-SmartSeason is a full-stack crop monitoring system built with the requested stack:
+A web app to track crop progress across multiple fields during a growing season.
 
-- `Flask` backend API
-- `PostgreSQL` database
-- `React` frontend
-- `Docker` and `docker-compose` for local setup
+You can:
+
+- Manage fields.
+- Assign field agents.
+- Track crop stages.
+- Log updates and observations.
 
 The app supports two roles:
 
@@ -14,12 +16,43 @@ The app supports two roles:
 
 ## Features
 
-- JWT-based authentication
-- Role-based API access
-- Field CRUD flow for admins
-- Field stage updates and notes for assigned field agents
-- Dashboard summaries with totals, status breakdown, and risk highlights
-- Seeded demo accounts and demo field data
+# Users and Access
+- JWT-based login
+- Role-based access control
+- Admin and Agent roles
+
+# Field Management
+
+- Create fields
+- Assign fields to agents
+- Track crop type and planting date
+
+# Field Updates
+
+- Agents update field stage
+- Agents add notes
+- Each update stored with timestamp
+
+# Field Lifecycle
+
+- Planted
+- Growing
+- Ready
+- Harvested
+
+## Field Status Logic
+
+Each field has a computed status based on planting date, current stage, and update freshness:
+
+- `Completed`: current stage is `Harvested`
+- `At Risk`:
+  - stage is `Planted` more than 14 days after planting
+  - latest field update is older than 7 days
+  - stage is `Ready` and the latest update is older than 10 days
+- `Active`: everything else
+
+This keeps the status logic simple while still surfacing stale or delayed fields on the dashboard.
+
 
 ## Tech Stack
 
@@ -27,7 +60,8 @@ The app supports two roles:
 
 - Flask
 - Flask-SQLAlchemy
-- PyJWT
+- JWT authenication
+- Flask-Migrate
 - PostgreSQL driver: `psycopg2-binary`
 
 ### Frontend
@@ -41,11 +75,40 @@ The app supports two roles:
 - Docker Compose
 - PostgreSQL 16
 
-## Project Structure
+## System Design
 
-- [backend](C:\Users\Queen\Desktop\Shamba records\backend) Flask API, models, auth, and seed data
-- [frontend](C:\Users\Queen\Desktop\Shamba records\frontend) React application and UI
-- [docker-compose.yml](C:\Users\Queen\Desktop\Shamba records\docker-compose.yml) full local stack orchestration
+# Backend structure:
+
+app/
+
+- main.py
+- models.py
+- auth.py
+- extensions.py
+- config.py
+
+Core models:
+
+- User
+- Field
+- FieldUpdate
+
+Design approach:
+
+- routes handle requests
+- models handle data
+- logic kept simple and clear
+
+## API Overview
+
+- `POST /api/auth/login`
+- `GET /api/me`
+- `GET /api/dashboard`
+- `GET /api/fields`
+- `POST /api/fields` admin only
+- `PUT /api/fields/:id` admin only
+- `POST /api/fields/:id/updates` agent only
+- `GET /api/users/agents` admin only
 
 ## Running the Project
 
@@ -75,29 +138,6 @@ The backend seeds demo data automatically on startup.
   - Username: `agent.brian`
   - Password: `agent123`
 
-## API Overview
-
-- `POST /api/auth/login`
-- `GET /api/me`
-- `GET /api/dashboard`
-- `GET /api/fields`
-- `POST /api/fields` admin only
-- `PUT /api/fields/:id` admin only
-- `POST /api/fields/:id/updates` agent only
-- `GET /api/users/agents` admin only
-
-## Field Status Logic
-
-Each field has a computed status based on planting date, current stage, and update freshness:
-
-- `Completed`: current stage is `Harvested`
-- `At Risk`:
-  - stage is `Planted` more than 14 days after planting
-  - latest field update is older than 7 days
-  - stage is `Ready` and the latest update is older than 10 days
-- `Active`: everything else
-
-This keeps the status logic simple while still surfacing stale or delayed fields on the dashboard.
 
 ## Design Decisions
 
@@ -112,3 +152,14 @@ This keeps the status logic simple while still surfacing stale or delayed fields
 - Admins can edit existing fields but field agents only submit updates for their assigned fields.
 - Notes are stored as a historical update trail instead of overwriting earlier observations.
 - Docker is the primary runtime path for the assessment.
+
+## Trade-offs
+- Simple logic over complex rules
+- No pagination to save time
+- Basic UI to focus on core functionality
+
+## Future Improvements
+- Alerts for At Risk fields
+- Multiple agents per field
+- Image uploads for updates
+- Analytics dashboard
