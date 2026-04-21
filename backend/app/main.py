@@ -10,12 +10,13 @@ from .auth import auth_required, create_token
 from .config import Config
 from .extensions import db
 from .models import FIELD_STAGES, Field, FieldUpdate, User
-
+from .extensions import db, migrate
 
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object(Config)
     db.init_app(app)
+    migrate.init_app(app, db)   
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     register_routes(app)
