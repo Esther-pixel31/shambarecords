@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: smartseason-db
+    environment:
+      POSTGRES_DB: smartseason
+      POSTGRES_USER: smartseason
+      POSTGRES_PASSWORD: smartseason
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smartseason -d smartseason"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    container_name: smartseason-backend
+    environment:
+      DATABASE_URL: postgresql://smartseason:smartseason@db:5432/smartseason
+      SECRET_KEY: smartseason-secret
+      FLASK_ENV: development
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: sh /app/entrypoint.sh
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: smartseason-frontend
+    environment:
+      VITE_API_URL: http://localhost:5000/api
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+
+volumes:
+  postgres_data:
