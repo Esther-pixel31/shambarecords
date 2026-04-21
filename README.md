@@ -77,7 +77,7 @@ This keeps the status logic simple while still surfacing stale or delayed fields
 
 ## System Design
 
-# Backend structure:
+### Backend structure:
 
 app/
 
