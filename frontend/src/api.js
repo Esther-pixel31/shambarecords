@@ -20,12 +20,27 @@ async function request(path, options = {}) {
 }
 
 export const api = {
-  login: (credentials) => request("/auth/login", { method: "POST", body: credentials }),
-  me: (token) => request("/me", { token }),
-  dashboard: (token) => request("/dashboard", { token }),
-  fields: (token) => request("/fields", { token }),
-  createField: (token, body) => request("/fields", { method: "POST", token, body }),
-  updateField: (token, id, body) => request(`/fields/${id}`, { method: "PUT", token, body }),
-  agents: (token) => request("/users/agents", { token }),
-  createUpdate: (token, fieldId, body) => request(`/fields/${fieldId}/updates`, { method: "POST", token, body })
+  login: (credentials) =>
+    request("/api/auth/login", { method: "POST", body: credentials }),
+
+  me: (token) =>
+    request("/api/me", { token }),
+
+  dashboard: (token) =>
+    request("/api/dashboard", { token }),
+
+  fields: (token) =>
+    request("/api/fields", { token }),
+
+  createField: (token, body) =>
+    request("/api/fields", { method: "POST", token, body }),
+
+  updateField: (token, id, body) =>
+    request(`/api/fields/${id}`, { method: "PUT", token, body }),
+
+  agents: (token) =>
+    request("/api/users/agents", { token }),
+
+  createUpdate: (token, fieldId, body) =>
+    request(`/api/fields/${fieldId}/updates`, { method: "POST", token, body })
 };
