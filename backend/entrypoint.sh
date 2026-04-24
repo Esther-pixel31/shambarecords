@@ -1,15 +1,13 @@
 #!/bin/sh
 set -e
 
-echo "Starting app..."
-gunicorn backend.app.main:app --bind 0.0.0.0:10000
+echo "Waiting for PostgreSQL..."
 
 until python - <<'PY'
 import os
 import psycopg2
 
-url = os.environ["DATABASE_URL"]
-conn = psycopg2.connect(url)
+conn = psycopg2.connect(os.environ["DATABASE_URL"])
 conn.close()
 PY
 do
@@ -18,10 +16,11 @@ do
 done
 
 echo "Running migrations..."
+export FLASK_APP=app.main:create_app
 python -m flask db upgrade
 
 echo "Seeding database..."
 python -m app.seed
 
 echo "Starting server..."
-gunicorn backend.app.main:app --bind 0.0.0.0:10000
+gunicorn "app.main:create_app()" --bind 0.0.0.0:10000
