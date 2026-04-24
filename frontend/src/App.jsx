@@ -187,12 +187,7 @@ function App() {
             </label>
             <button type="submit">Sign in</button>
           </form>
-          <div className="demo-box">
-            <strong>Demo credentials</strong>
-            <p><code>admin</code> / <code>admin123</code></p>
-            <p><code>agent.alice</code> / <code>agent123</code></p>
-            <p><code>agent.brian</code> / <code>agent123</code></p>
-          </div>
+          
         </div>
       </div>
     );
