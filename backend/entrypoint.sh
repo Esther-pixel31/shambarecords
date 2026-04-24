@@ -1,18 +1,26 @@
 #!/bin/sh
 set -e
 
+echo "Waiting for PostgreSQL..."
+
 until python - <<'PY'
 import os
 import psycopg2
 
 url = os.environ["DATABASE_URL"]
-connection = psycopg2.connect(url)
-connection.close()
+conn = psycopg2.connect(url)
+conn.close()
 PY
 do
-  echo "Waiting for PostgreSQL..."
+  echo "PostgreSQL not ready"
   sleep 2
 done
 
+echo "Running migrations..."
+python -m flask db upgrade
+
+echo "Seeding database..."
 python -m app.seed
-python -m flask --app app.main run --host=0.0.0.0 --port=5000
+
+echo "Starting server..."
+gunicorn backend.app.main:app --bind 0.0.0.0:10000
