@@ -165,7 +165,6 @@ function App() {
         <div className="auth-card">
           <p className="eyebrow">SmartSeason</p>
           <h1>Field Monitoring System</h1>
-          <p className="lede">Flask API, React UI, PostgreSQL persistence, and Docker-ready delivery.</p>
           {error ? <div className="alert">{error}</div> : null}
           <form onSubmit={handleLogin} className="stack">
             <label>
