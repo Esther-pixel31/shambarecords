@@ -1,7 +1,8 @@
 #!/bin/sh
 set -e
 
-echo "Waiting for PostgreSQL..."
+echo "Starting app..."
+gunicorn backend.app.main:app --bind 0.0.0.0:10000
 
 until python - <<'PY'
 import os
